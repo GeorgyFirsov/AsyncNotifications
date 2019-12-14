@@ -21,7 +21,7 @@
 // Return values:
 //                 ERROR_SUCCESS : function succeeded
 //       ERROR_INVALID_PARAMETER : phContext is a null-pointer
-// ERROR_ALLOTTED_SPACE_EXCEEDED : memory allocation failed
+//       ERROR_NOT_ENOUGH_MEMORY : memory allocation failed
 // 
 // Comments: 
 //      Do not delete returned handle manually!
@@ -48,7 +48,7 @@ DWORD RpcOpenSession(
 	}
 	catch( const std::bad_alloc& )
 	{
-		return ERROR_ALLOTTED_SPACE_EXCEEDED;
+		return ERROR_NOT_ENOUGH_MEMORY;
 	}
 
 	return ERROR_SUCCESS;
