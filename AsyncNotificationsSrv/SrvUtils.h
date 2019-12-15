@@ -29,9 +29,9 @@
 //
 struct CAsyncControl
 {
-	PRPC_ASYNC_STATE	pState;
-//	context_handle_t	hContext;	// Not present
-	wchar_t*			pszResult;
+	PRPC_ASYNC_STATE pState;
+//	context_handle_t hContext;	// Not present
+	wchar_t*         pszResult;
 };
 
 
@@ -96,11 +96,11 @@ private:
 	CServer& operator=( CServer&& ) = delete;
 
 private:
-	subscriptions_t			m_subscriptions;
-	std::mutex				m_mtxSubscriptions;
+	subscriptions_t	  m_subscriptions;
+	std::mutex        m_mtxSubscriptions;
 
-	client_controls_t		m_calls;
-	std::mutex				m_mtxCalls;
+	client_controls_t m_calls;
+	std::mutex        m_mtxCalls;
 };
 
 
