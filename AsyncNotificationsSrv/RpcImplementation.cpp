@@ -1,4 +1,5 @@
 #include "SrvIncludes.h"
+#include "SrvUtils.h"
 #include "../Common/Utils.h"
 
 // Automatically generated
@@ -83,7 +84,7 @@ DWORD RpcCloseSession(
 		return ERROR_INVALID_PARAMETER;
 	}
 
-	delete (CContextHandle*)*phContext;
+	delete static_cast<CContextHandle*>( *phContext );
 
 	return ERROR_SUCCESS;
 }
@@ -100,16 +101,21 @@ DWORD RpcCloseSession(
 // Description: adds subscription to server's internal data-base
 // ------------------------------------------------------------
 // Parameters:
-//                     phContext :
-//                     chToAwait :
+//                     phContext : pointer to context handle of
+//                                 concrete client
+//                     chToAwait : character which should be the
+//                                 first symbol of a string on server
+//                                 when concrete client should be 
+//                                 notified
 // Return values:
-//                               :
+//                 ERROR_SUCCESS : function succeeded
+//       ERROR_INVALID_PARAMETER : phContext is a null-pointer
 //
 // Comments: 
 // 
 // ------------------------------------------------------------
 // Author: Georgy Firsov
-// Date: 
+// Date: 15.12.2019
 // ------------------------------------------------------------
 // 
 DWORD RpcAddSubscription(
@@ -117,11 +123,8 @@ DWORD RpcAddSubscription(
 	/* [in] */ wchar_t chToAwait
 )
 {
-	UNREFERENCED_PARAMETER( phContext );
-	UNREFERENCED_PARAMETER( chToAwait );
-
-	// Empty for now
-	return ERROR_CALL_NOT_IMPLEMENTED;
+	DWORD dwResult = g_Server.RpcAddSubscription( phContext, chToAwait );
+	return dwResult;
 }
 
 
@@ -131,16 +134,24 @@ DWORD RpcAddSubscription(
 // Description: removes subscription from server's data-base
 // ------------------------------------------------------------
 // Parameters:
-//                     phContext :
-//                    chToCancel :
+//                     phContext : pointer to context handle of
+//                                 concrete client
+//                    chToCancel : subscription-character
 // Return values:
-//                               :
+//                 ERROR_SUCCESS : function succeeded
+//       ERROR_INVALID_PARAMETER : phContext is a null-pointer
+//               ERROR_NOT_FOUND : it was the last subscription
+//                                 of current client, but no 
+//                                 asynchronous call parameters
+//                                 found for it
+//    RPC_S_INVALID_ASYNC_HANDLE : parameters of asynchronous call
+//                                 are invalid
 // 
 // Comments: 
 // 
 // ------------------------------------------------------------
 // Author: Georgy Firsov
-// Date: 
+// Date: 15.12.2019
 // ------------------------------------------------------------
 // 
 DWORD RpcCancelSubscription(
@@ -148,11 +159,8 @@ DWORD RpcCancelSubscription(
 	/* [in] */ wchar_t chToCancel
 )
 {
-	UNREFERENCED_PARAMETER( phContext );
-	UNREFERENCED_PARAMETER( chToCancel );
-
-	// Empty for now
-	return ERROR_CALL_NOT_IMPLEMENTED;
+	DWORD dwResult = g_Server.RpcCancelSubscription( phContext, chToCancel );
+	return dwResult;
 }
 
 

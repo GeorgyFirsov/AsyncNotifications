@@ -21,7 +21,10 @@
 // Date: 
 // ------------------------------------------------------------
 //
-class CContextHandle
+struct CContextHandle
 {
-	// Empty for now
+	size_t nSubsciptions = 0;
 };
+
+constexpr auto GetContext( context_handle_t hContext ) 
+{ return static_cast<CContextHandle*>( hContext ); }

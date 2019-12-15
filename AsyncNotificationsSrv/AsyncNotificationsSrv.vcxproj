@@ -134,11 +134,13 @@
     <ClInclude Include="..\AsyncNotifications\AsyncNotificationsInterface_h.h" />
     <ClInclude Include="..\Common\Utils.h" />
     <ClInclude Include="SrvIncludes.h" />
+    <ClInclude Include="SrvUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AsyncNotifications\AsyncNotificationsInterface_s.c" />
     <ClCompile Include="AsyncNotificationsSrv.cpp" />
     <ClCompile Include="RpcImplementation.cpp" />
+    <ClCompile Include="SrvUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
