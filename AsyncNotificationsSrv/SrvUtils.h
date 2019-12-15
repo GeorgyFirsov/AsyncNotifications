@@ -80,9 +80,22 @@ public:
 	static CServer& GetInstance();
 
 	_Check_return_
-	DWORD RpcAddSubscription( _Inout_ context_handle_t* phContext, _In_ wchar_t chToAwait );
+	DWORD RpcAddSubscription( 
+		_Inout_ context_handle_t* phContext, 
+		_In_ wchar_t chToAwait 
+	);
+	
 	_Check_return_
-	DWORD RpcCancelSubscription( _Inout_ context_handle_t* phContext, _In_ wchar_t chToCancel );
+	DWORD RpcCancelSubscription( 
+		_Inout_ context_handle_t* phContext, 
+		_In_ wchar_t chToCancel 
+	);
+
+	void RpcAsyncAwaitForEvent( 
+		_In_ PRPC_ASYNC_STATE pState, 
+		_In_ context_handle_t hContext, 
+		_In_opt_ wchar_t* pszResult 
+	);
 
 private:
 	CServer() = default;

@@ -196,17 +196,7 @@ DWORD RpcCancelSubscription(
 	/* [in] */ context_handle_t hContext,
 	/* [size_is][string][out] */ wchar_t* pszResult)
 {
-	UNREFERENCED_PARAMETER( hContext );
-	UNREFERENCED_PARAMETER( pszResult );
-
-	// Empty for now
-
-#pragma warning(disable: 6031)  // Return value ignored : 'RpcAsyncAbortCall'
-	::RpcAsyncAbortCall( 
-		RpcAsyncAwaitForEvent_AsyncHandle, 
-		ERROR_CALL_NOT_IMPLEMENTED 
-	);
-#pragma warning(default: 6031)
+	g_Server.RpcAsyncAwaitForEvent( RpcAsyncAwaitForEvent_AsyncHandle, hContext, pszResult );
 }
 
 

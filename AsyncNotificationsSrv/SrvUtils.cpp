@@ -7,8 +7,12 @@ CServer& CServer::GetInstance()
 	return instance;
 }
 
+
 _Check_return_
-DWORD CServer::RpcAddSubscription( _Inout_ context_handle_t* phContext, _In_ wchar_t chToAwait )
+DWORD CServer::RpcAddSubscription( 
+	_Inout_ context_handle_t* phContext, 
+	_In_ wchar_t chToAwait 
+)
 {
 	if(!phContext) {
 		return ERROR_INVALID_PARAMETER;
@@ -46,8 +50,12 @@ DWORD CServer::RpcAddSubscription( _Inout_ context_handle_t* phContext, _In_ wch
 	return ERROR_SUCCESS;
 }
 
+
 _Check_return_
-DWORD CServer::RpcCancelSubscription( _Inout_ context_handle_t* phContext, _In_ wchar_t chToCancel )
+DWORD CServer::RpcCancelSubscription( 
+	_Inout_ context_handle_t* phContext, 
+	_In_ wchar_t chToCancel 
+)
 {
 	if (!phContext) {
 		return ERROR_INVALID_PARAMETER;
@@ -136,4 +144,19 @@ DWORD CServer::RpcCancelSubscription( _Inout_ context_handle_t* phContext, _In_ 
 	m_calls.erase( callControl );
 
 	return static_cast<DWORD>( status );
+}
+
+
+void CServer::RpcAsyncAwaitForEvent( 
+	_In_ PRPC_ASYNC_STATE pState, 
+	_In_ context_handle_t hContext, 
+	_In_opt_ wchar_t* pszResult 
+)
+{
+	UNREFERENCED_PARAMETER( hContext );
+	UNREFERENCED_PARAMETER( pszResult );
+
+#pragma warning(disable: 6031) // Return value ignored : 'RpcAsyncAbortCall'
+	::RpcAsyncAbortCall( pState, ERROR_CALL_NOT_IMPLEMENTED );
+#pragma warning(default: 6031)
 }
