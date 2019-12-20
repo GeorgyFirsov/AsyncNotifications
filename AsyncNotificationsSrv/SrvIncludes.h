@@ -15,3 +15,7 @@
 #include <map>
 #include <set>
 #include <mutex>
+
+// Project header files
+#include "../Common/Utils.h"
+#include "../AsyncNotifications/AsyncNotificationsInterface_h.h"

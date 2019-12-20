@@ -60,7 +60,7 @@ extern "C"{
 
 #define	dwMaxStringLength	( 255 )
 
-typedef /* [context_handle_serialize][context_handle] */ void *context_handle_t;
+typedef /* [context_handle_noserialize][context_handle] */ void *context_handle_t;
 
 DWORD RpcOpenSession( 
     /* [in] */ handle_t hFormalParam,

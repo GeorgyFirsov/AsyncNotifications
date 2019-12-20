@@ -30,6 +30,9 @@
     <ClCompile Include="RpcImplementation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AsyncNotifications\AsyncNotificationsInterface_h.h">
@@ -39,6 +42,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="ClIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

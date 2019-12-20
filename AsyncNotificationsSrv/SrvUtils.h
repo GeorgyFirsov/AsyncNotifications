@@ -1,38 +1,5 @@
 #pragma once
-
 #include "SrvIncludes.h"
-
-// Automatically generated
-#include "../AsyncNotifications/AsyncNotificationsInterface_h.h"
-
-// ------------------------------------------------------------
-// Class: CAsyncControl
-// Description: all arguments of asyncronous calls will be
-//              saved in such structures.
-// ------------------------------------------------------------
-// Parameters (for constructors): none
-// 
-// Members:
-//                  pState : pointer to async state necessary
-//                           for MS AsyncRPC
-//               pszResult : pointer to output string that 
-//                           will be filled with event-string
-// 
-// Comments: 
-//     hContext is abcent, because it will be a key in std::map
-//     binded with such structures.
-//       
-// ------------------------------------------------------------
-// Author: Georgy Firsov
-// Date: 15.12.2019
-// ------------------------------------------------------------
-//
-struct CAsyncControl
-{
-	PRPC_ASYNC_STATE pState;
-//	context_handle_t hContext;	// Not present
-	wchar_t*         pszResult;
-};
 
 
 //
@@ -58,14 +25,25 @@ using client_controls_t = std::map<context_handle_t, CAsyncControl>;
 // Parameters (for constructors): none
 // 
 // Members:
-//             m_pInstance : pointer to server instance.
-//               m_fCalled : flag used to initialize instance
-//                           only once.
-//         m_subscriptions : every subscription grouped by symbol
-//      m_mtxSubscriptions : corresponding mutex
-//                 m_calls : control block and counter for each
-//                           client's asynchronous call
-//              m_mtxCalls : corresponding mutex
+//                 m_pInstance : pointer to server instance.
+//                   m_fCalled : flag used to initialize instance
+//                             : only once.
+//             m_subscriptions : every subscription grouped by symbol
+//          m_mtxSubscriptions : corresponding mutex
+//                     m_calls : control block and counter for each
+//                             : client's asynchronous call
+//                  m_mtxCalls : corresponding mutex
+//              
+// Member functions:
+//        DWORD RpcOpenSession : opens client's session and initializes
+//                             : context handle
+//       DWORD RpcCloseSession : closes client's session and deletes 
+//                             : context handle
+//    DWORD RpcAddSubscription : adds client's subscription
+// DWORD RpcCancelSubscription : cancels client's subscription
+//  void RpcAsyncAwaitForEvent : registers asyncronous call in m_calls
+// void AnalyzeStringAndNotify : receives input string and send it
+//                             : to all its' subscribers
 // 
 // Comments: 
 //       
@@ -78,6 +56,17 @@ class CServer
 {
 public:
 	static CServer& GetInstance();
+
+	_Check_return_
+	DWORD RpcOpenSession(
+		_In_ handle_t hFormalParam, 
+		_Out_ context_handle_t *phContext
+	);
+
+	_Check_return_
+	DWORD RpcCloseSession(
+		_Inout_ context_handle_t *phContext
+	);
 
 	_Check_return_
 	DWORD RpcAddSubscription( 
@@ -94,7 +83,12 @@ public:
 	void RpcAsyncAwaitForEvent( 
 		_In_ PRPC_ASYNC_STATE pState, 
 		_In_ context_handle_t hContext, 
-		_In_opt_ wchar_t* pszResult 
+		_In_ wchar_t* pszResult 
+	);
+
+	void AnalyzeStringAndNotify(
+		_In_ const wchar_t* pszString,
+		_In_ size_t ulSize
 	);
 
 private:

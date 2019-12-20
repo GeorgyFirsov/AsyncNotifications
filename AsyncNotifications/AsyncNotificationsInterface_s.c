@@ -143,7 +143,7 @@ static const AsyncNotificationsInterface_MIDL_PROC_FORMAT_STRING AsyncNotificati
 /* 48 */	NdrFcShort( 0x1 ),	/* 1 */
 /* 50 */	NdrFcShort( 0x10 ),	/* X64 Stack size/offset = 16 */
 /* 52 */	0x30,		/* FC_BIND_CONTEXT */
-			0xea,		/* Ctxt flags:  via ptr, in, out, strict, serialize, */
+			0xec,		/* Ctxt flags:  via ptr, in, out, strict, no serialize, */
 /* 54 */	NdrFcShort( 0x0 ),	/* X64 Stack size/offset = 0 */
 /* 56 */	0x0,		/* 0 */
 			0x0,		/* 0 */
@@ -179,7 +179,7 @@ static const AsyncNotificationsInterface_MIDL_PROC_FORMAT_STRING AsyncNotificati
 /* 92 */	NdrFcShort( 0x2 ),	/* 2 */
 /* 94 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
 /* 96 */	0x30,		/* FC_BIND_CONTEXT */
-			0xea,		/* Ctxt flags:  via ptr, in, out, strict, serialize, */
+			0xec,		/* Ctxt flags:  via ptr, in, out, strict, no serialize, */
 /* 98 */	NdrFcShort( 0x0 ),	/* X64 Stack size/offset = 0 */
 /* 100 */	0x0,		/* 0 */
 			0x0,		/* 0 */
@@ -222,7 +222,7 @@ static const AsyncNotificationsInterface_MIDL_PROC_FORMAT_STRING AsyncNotificati
 /* 142 */	NdrFcShort( 0x3 ),	/* 3 */
 /* 144 */	NdrFcShort( 0x18 ),	/* X64 Stack size/offset = 24 */
 /* 146 */	0x30,		/* FC_BIND_CONTEXT */
-			0xea,		/* Ctxt flags:  via ptr, in, out, strict, serialize, */
+			0xec,		/* Ctxt flags:  via ptr, in, out, strict, no serialize, */
 /* 148 */	NdrFcShort( 0x0 ),	/* X64 Stack size/offset = 0 */
 /* 150 */	0x0,		/* 0 */
 			0x0,		/* 0 */
@@ -265,7 +265,7 @@ static const AsyncNotificationsInterface_MIDL_PROC_FORMAT_STRING AsyncNotificati
 /* 192 */	NdrFcShort( 0x4 ),	/* 4 */
 /* 194 */	NdrFcShort( 0x20 ),	/* X64 Stack size/offset = 32 */
 /* 196 */	0x30,		/* FC_BIND_CONTEXT */
-			0x4a,		/* Ctxt flags:  in, strict, serialize, */
+			0x4c,		/* Ctxt flags:  in, strict, no serialize, */
 /* 198 */	NdrFcShort( 0x8 ),	/* X64 Stack size/offset = 8 */
 /* 200 */	0x0,		/* 0 */
 			0x0,		/* 0 */
@@ -312,18 +312,18 @@ static const AsyncNotificationsInterface_MIDL_TYPE_FORMAT_STRING AsyncNotificati
 			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
 /*  4 */	NdrFcShort( 0x2 ),	/* Offset= 2 (6) */
 /*  6 */	0x30,		/* FC_BIND_CONTEXT */
-			0xaa,		/* Ctxt flags:  via ptr, out, strict, serialize, */
+			0xac,		/* Ctxt flags:  via ptr, out, strict, no serialize, */
 /*  8 */	0x0,		/* 0 */
 			0x0,		/* 0 */
 /* 10 */	
 			0x11, 0x4,	/* FC_RP [alloced_on_stack] */
 /* 12 */	NdrFcShort( 0x2 ),	/* Offset= 2 (14) */
 /* 14 */	0x30,		/* FC_BIND_CONTEXT */
-			0xeb,		/* Ctxt flags:  via ptr, in, out, strict, serialize, can't be null */
+			0xed,		/* Ctxt flags:  via ptr, in, out, strict, no serialize, can't be null */
 /* 16 */	0x0,		/* 0 */
 			0x0,		/* 0 */
 /* 18 */	0x30,		/* FC_BIND_CONTEXT */
-			0x4b,		/* Ctxt flags:  in, strict, serialize, can't be null */
+			0x4d,		/* Ctxt flags:  in, strict, no serialize, can't be null */
 /* 20 */	0x0,		/* 0 */
 			0x0,		/* 0 */
 /* 22 */	
@@ -571,7 +571,7 @@ static const __midl_frag21_t __midl_frag21 =
 { 
 /* struct _NDR64_CONTEXT_HANDLE_FORMAT */
     0x70,    /* FC64_BIND_CONTEXT */
-    (NDR64_UINT8) 75 /* 0x4b */,
+    (NDR64_UINT8) 77 /* 0x4d */,
     (NDR64_UINT8) 0 /* 0x0 */,
     (NDR64_UINT8) 1 /* 0x1 */
 };
@@ -595,7 +595,7 @@ static const __midl_frag20_t __midl_frag20 =
         { 
         /* struct _NDR64_BIND_AND_NOTIFY_EXTENSION */
             0x70,    /* FC64_BIND_CONTEXT */
-            (NDR64_UINT8) 74 /* 0x4a */,
+            (NDR64_UINT8) 76 /* 0x4c */,
             8 /* 0x8 */,   /* Stack offset */
             (NDR64_UINT8) 0 /* 0x0 */,
             (NDR64_UINT8) 0 /* 0x0 */
@@ -683,7 +683,7 @@ static const __midl_frag17_t __midl_frag17 =
 { 
 /* struct _NDR64_CONTEXT_HANDLE_FORMAT */
     0x70,    /* FC64_BIND_CONTEXT */
-    (NDR64_UINT8) 235 /* 0xeb */,
+    (NDR64_UINT8) 237 /* 0xed */,
     (NDR64_UINT8) 0 /* 0x0 */,
     (NDR64_UINT8) 1 /* 0x1 */
 };
@@ -716,7 +716,7 @@ static const __midl_frag15_t __midl_frag15 =
         { 
         /* struct _NDR64_BIND_AND_NOTIFY_EXTENSION */
             0x70,    /* FC64_BIND_CONTEXT */
-            (NDR64_UINT8) 234 /* 0xea */,
+            (NDR64_UINT8) 236 /* 0xec */,
             0 /* 0x0 */,   /* Stack offset */
             (NDR64_UINT8) 0 /* 0x0 */,
             (NDR64_UINT8) 0 /* 0x0 */
@@ -816,7 +816,7 @@ static const __midl_frag6_t __midl_frag6 =
         { 
         /* struct _NDR64_BIND_AND_NOTIFY_EXTENSION */
             0x70,    /* FC64_BIND_CONTEXT */
-            (NDR64_UINT8) 234 /* 0xea */,
+            (NDR64_UINT8) 236 /* 0xec */,
             0 /* 0x0 */,   /* Stack offset */
             (NDR64_UINT8) 0 /* 0x0 */,
             (NDR64_UINT8) 0 /* 0x0 */
@@ -877,7 +877,7 @@ static const __midl_frag4_t __midl_frag4 =
 { 
 /* struct _NDR64_CONTEXT_HANDLE_FORMAT */
     0x70,    /* FC64_BIND_CONTEXT */
-    (NDR64_UINT8) 170 /* 0xaa */,
+    (NDR64_UINT8) 172 /* 0xac */,
     (NDR64_UINT8) 0 /* 0x0 */,
     (NDR64_UINT8) 1 /* 0x1 */
 };

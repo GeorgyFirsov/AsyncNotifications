@@ -1,4 +1,4 @@
-typedef [context_handle_serialize] context_handle_t;
+typedef [context_handle_noserialize] context_handle_t;
 [strict_context_handle, explicit_handle]
 
 interface AsyncNotifications

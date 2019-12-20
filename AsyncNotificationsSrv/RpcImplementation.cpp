@@ -1,13 +1,6 @@
 #include "SrvIncludes.h"
 #include "SrvUtils.h"
-#include "../Common/Utils.h"
 
-// Automatically generated
-#include "../AsyncNotifications/AsyncNotificationsInterface_h.h"
-
-// ----------------------------------------------------------------------
-// Functions to open and close client-server session
-// 
 
 // ------------------------------------------------------------
 // Function: RpcOpenSession
@@ -37,22 +30,8 @@ DWORD RpcOpenSession(
 	/* [out] */ context_handle_t* phContext
 )
 {
-	UNREFERENCED_PARAMETER( hFormalParam );
-
-	if(!phContext) {
-		return ERROR_INVALID_PARAMETER;
-	}
-
-	try
-	{
-		*phContext = new CContextHandle;
-	}
-	catch( const std::bad_alloc& )
-	{
-		return ERROR_NOT_ENOUGH_MEMORY;
-	}
-
-	return ERROR_SUCCESS;
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
+	return g_Server.RpcOpenSession( hFormalParam, phContext );
 }
 
 
@@ -80,13 +59,8 @@ DWORD RpcCloseSession(
 	/* [out][in] */ context_handle_t* phContext
 )
 {
-	if(!phContext) {
-		return ERROR_INVALID_PARAMETER;
-	}
-
-	delete static_cast<CContextHandle*>( *phContext );
-
-	return ERROR_SUCCESS;
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
+	return g_Server.RpcCloseSession( phContext );
 }
 
 
@@ -102,11 +76,11 @@ DWORD RpcCloseSession(
 // ------------------------------------------------------------
 // Parameters:
 //                     phContext : pointer to context handle of
-//                                 concrete client
+//                               : concrete client
 //                     chToAwait : character which should be the
-//                                 first symbol of a string on server
-//                                 when concrete client should be 
-//                                 notified
+//                               : first symbol of a string on server
+//                               : when concrete client should be 
+//                               : notified
 // Return values:
 //                 ERROR_SUCCESS : function succeeded
 //       ERROR_INVALID_PARAMETER : phContext is a null-pointer
@@ -123,8 +97,8 @@ DWORD RpcAddSubscription(
 	/* [in] */ wchar_t chToAwait
 )
 {
-	DWORD dwResult = g_Server.RpcAddSubscription( phContext, chToAwait );
-	return dwResult;
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToAwait );
+	return g_Server.RpcAddSubscription( phContext, chToAwait );
 }
 
 
@@ -135,17 +109,17 @@ DWORD RpcAddSubscription(
 // ------------------------------------------------------------
 // Parameters:
 //                     phContext : pointer to context handle of
-//                                 concrete client
+//                               : concrete client
 //                    chToCancel : subscription-character
 // Return values:
 //                 ERROR_SUCCESS : function succeeded
 //       ERROR_INVALID_PARAMETER : phContext is a null-pointer
 //               ERROR_NOT_FOUND : it was the last subscription
-//                                 of current client, but no 
-//                                 asynchronous call parameters
-//                                 found for it
+//                               : of current client, but no 
+//                               : asynchronous call parameters
+//                               : found for it
 //    RPC_S_INVALID_ASYNC_HANDLE : parameters of asynchronous call
-//                                 are invalid
+//                               : are invalid
 // 
 // Comments: 
 // 
@@ -159,8 +133,8 @@ DWORD RpcCancelSubscription(
 	/* [in] */ wchar_t chToCancel
 )
 {
-	DWORD dwResult = g_Server.RpcCancelSubscription( phContext, chToCancel );
-	return dwResult;
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToCancel );
+	return g_Server.RpcCancelSubscription( phContext, chToCancel );
 }
 
 
@@ -170,14 +144,15 @@ DWORD RpcCancelSubscription(
 // 
 
 // ------------------------------------------------------------
-// Function: RpcCloseSession
+// Function: RpcAsyncAwaitForEvent
 // Return type: void
 // Description: frees space allocated for client's context handle
 // ------------------------------------------------------------
 // Parameters:
-//  RpcAsyncAwaitForEvent_AsyncHandle :
-//                           hContext :
-//                          pszResult :
+//  RpcAsyncAwaitForEvent_AsyncHandle : state, that identifies
+//                                    : asynchronous call
+//                           hContext : context-handle
+//                          pszResult : output string
 // Return values: none
 // 
 // Comments: 
@@ -188,7 +163,7 @@ DWORD RpcCancelSubscription(
 // 
 // ------------------------------------------------------------
 // Author: Georgy Firsov
-// Date: 
+// Date: 21.12.2019
 // ------------------------------------------------------------
 // 
 /* [async] */ void  RpcAsyncAwaitForEvent(
@@ -196,9 +171,9 @@ DWORD RpcCancelSubscription(
 	/* [in] */ context_handle_t hContext,
 	/* [size_is][string][out] */ wchar_t* pszResult)
 {
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
 	g_Server.RpcAsyncAwaitForEvent( RpcAsyncAwaitForEvent_AsyncHandle, hContext, pszResult );
 }
-
 
 
 
@@ -208,8 +183,7 @@ DWORD RpcCancelSubscription(
 
 void __RPC_USER context_handle_t_rundown( context_handle_t hContext )
 {
-	std::wcout << L"Rundown on handle: " << as_hex( hContext, 8 ) << std::endl;
-
+	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__ );
 	RpcCloseSession( &hContext );
 }
 
