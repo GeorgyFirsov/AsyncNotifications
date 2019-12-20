@@ -38,8 +38,8 @@ number of input strings.
 Client app will have simple rules applied to it's input:
 - `quit` will close client in common way with all cleaning procedures
 - `exit` will terminate client immediately (by calling `ExitProcess`)
-- `subscribe [a-zA-Z]` will send a subscription request to server
-- `cancel [a-zA-Z]` will send a cancellation request to server
+- `+[a-zA-Z]` will send a subscription request to server
+- `-[a-zA-Z]` will send a cancellation request to server
 - any other string will be ignored
 
 Server's commands will be simpler:
