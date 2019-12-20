@@ -46,3 +46,7 @@ Server's commands will be simpler:
 - `quit` will close client in common way with all cleaning procedures
 - `exit` will terminate client immediately (by calling `ExitProcess`)
 - any other string will be assumed as an input
+
+### Session example
+
+![Screenshot 1](./Images/Picture-1.png)
