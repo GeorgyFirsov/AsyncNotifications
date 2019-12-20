@@ -4,6 +4,8 @@
 
 int wmain()
 {
+	ThreadSafePrint( std::wcout, TID, L"Main" );
+
 	//
 	// Client's registration
 	// 
