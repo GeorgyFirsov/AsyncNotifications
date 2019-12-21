@@ -23,10 +23,10 @@
 // ------------------------------------------------------------
 // 
 void StartWaitRoutine(
-	HANDLE* phWaitThread,
-	PRPC_ASYNC_STATE pState,
-	context_handle_t* phContext,
-	wchar_t* pszResult
+    HANDLE* phWaitThread,
+    PRPC_ASYNC_STATE pState,
+    context_handle_t* phContext,
+    wchar_t* pszResult
 );
 
 

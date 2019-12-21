@@ -1,58 +1,58 @@
 [
-	uuid(B3102C22-66E6-4B94-88F2-7C5291CE22C0),
-	version(1.0)
+    uuid(B3102C22-66E6-4B94-88F2-7C5291CE22C0),
+    version(1.0)
 ]
 
 interface AsyncNotifications
 {
-	//
-	// Necessary for ability to use DWORD type
-	// 
-	import "wtypes.idl";
+    //
+    // Necessary for ability to use DWORD type
+    // 
+    import "wtypes.idl";
 
-	const wchar_t* pszDefaultProtocol = L"ncalrpc";
-	const wchar_t* pszDefaultEndpoint = L"AsyncNotifications";
+    const wchar_t* pszDefaultProtocol = L"ncalrpc";
+    const wchar_t* pszDefaultEndpoint = L"AsyncNotifications";
 
-	const DWORD dwMaxStringLength = 255;
+    const DWORD dwMaxStringLength = 255;
 
-	//
-	// It is an analogue of identifier of client/
-	// To generate it invoke RpcOpenSession on client and
-	// call RpcCloseSession on client's termination.
-	// 
-	typedef [context_handle] void* context_handle_t;
+    //
+    // It is an analogue of identifier of client/
+    // To generate it invoke RpcOpenSession on client and
+    // call RpcCloseSession on client's termination.
+    // 
+    typedef [context_handle] void* context_handle_t;
 
-	//
-	// Session utilites
-	// 
-	DWORD RpcOpenSession(
-		[in] handle_t hFormalParam,
-		[out] context_handle_t* phContext
-	);
+    //
+    // Session utilites
+    // 
+    DWORD RpcOpenSession(
+        [in] handle_t hFormalParam,
+        [out] context_handle_t* phContext
+    );
 
-	DWORD RpcCloseSession(
-		[in, out] context_handle_t* phContext
-	);
+    DWORD RpcCloseSession(
+        [in, out] context_handle_t* phContext
+    );
 
-	//
-	// Subscription utilites
-	// 
-	DWORD RpcAddSubscription(
-		[in, out] context_handle_t* phContext,
-		[in] wchar_t chToAwait
-	);
+    //
+    // Subscription utilites
+    // 
+    DWORD RpcAddSubscription(
+        [in, out] context_handle_t* phContext,
+        [in] wchar_t chToAwait
+    );
 
-	DWORD RpcCancelSubscription(
-		[in, out] context_handle_t* phContext,
-		[in] wchar_t chToCancel
-	);
+    DWORD RpcCancelSubscription(
+        [in, out] context_handle_t* phContext,
+        [in] wchar_t chToCancel
+    );
 
-	//
-	// Asynchronous procedure, that awaits an event
-	// 
-	DWORD RpcAsyncAwaitForEvent(
-		[in] context_handle_t hContext,
-		[out, string, size_is(dwMaxStringLength)]
-			wchar_t* pszResult
-	);
+    //
+    // Asynchronous procedure, that awaits an event
+    // 
+    DWORD RpcAsyncAwaitForEvent(
+        [in] context_handle_t hContext,
+        [out, string, size_is(dwMaxStringLength)]
+            wchar_t* pszResult
+    );
 }

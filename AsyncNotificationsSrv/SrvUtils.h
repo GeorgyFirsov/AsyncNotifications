@@ -47,20 +47,20 @@ using client_controls_t = std::map<context_handle_t, CAsyncControl>;
 class CCriticalSection
 {
 public:
-	CCriticalSection() { InitializeCriticalSection( &m_cs ); }
-	~CCriticalSection() { DeleteCriticalSection( &m_cs ); }
+    CCriticalSection() { InitializeCriticalSection( &m_cs ); }
+    ~CCriticalSection() { DeleteCriticalSection( &m_cs ); }
 
-	CCriticalSection( const CCriticalSection& ) = delete;
-	CCriticalSection& operator=( const CCriticalSection& ) = delete;
-	CCriticalSection( CCriticalSection&& ) = delete;
-	CCriticalSection& operator=( CCriticalSection&& ) = delete;
+    CCriticalSection( const CCriticalSection& ) = delete;
+    CCriticalSection& operator=( const CCriticalSection& ) = delete;
+    CCriticalSection( CCriticalSection&& ) = delete;
+    CCriticalSection& operator=( CCriticalSection&& ) = delete;
 
-	void lock() { EnterCriticalSection( &m_cs ); }
-	void unlock() { LeaveCriticalSection( &m_cs ); }
-	bool try_lock() { return (bool)TryEnterCriticalSection( &m_cs ); }
+    void lock() { EnterCriticalSection( &m_cs ); }
+    void unlock() { LeaveCriticalSection( &m_cs ); }
+    bool try_lock() { return (bool)TryEnterCriticalSection( &m_cs ); }
 
 private:
-	CRITICAL_SECTION m_cs;
+    CRITICAL_SECTION m_cs;
 };
 
 
@@ -102,59 +102,59 @@ private:
 class CServer
 {
 public:
-	static CServer& GetInstance();
+    static CServer& GetInstance();
 
-	_Check_return_
-	DWORD RpcOpenSession(
-		_In_ handle_t hFormalParam, 
-		_Out_ context_handle_t *phContext
-	);
+    _Check_return_
+    DWORD RpcOpenSession(
+        _In_ handle_t hFormalParam, 
+        _Out_ context_handle_t *phContext
+    );
 
-	_Check_return_
-	DWORD RpcCloseSession(
-		_Inout_ context_handle_t *phContext
-	);
+    _Check_return_
+    DWORD RpcCloseSession(
+        _Inout_ context_handle_t *phContext
+    );
 
-	_Check_return_
-	DWORD RpcAddSubscription( 
-		_Inout_ context_handle_t* phContext, 
-		_In_ wchar_t chToAwait 
-	);
-	
-	_Check_return_
-	DWORD RpcCancelSubscription( 
-		_Inout_ context_handle_t* phContext, 
-		_In_ wchar_t chToCancel 
-	);
+    _Check_return_
+    DWORD RpcAddSubscription( 
+        _Inout_ context_handle_t* phContext, 
+        _In_ wchar_t chToAwait 
+    );
+    
+    _Check_return_
+    DWORD RpcCancelSubscription( 
+        _Inout_ context_handle_t* phContext, 
+        _In_ wchar_t chToCancel 
+    );
 
-	void RpcAsyncAwaitForEvent( 
-		_In_ PRPC_ASYNC_STATE pState, 
-		_In_ context_handle_t hContext, 
-		_In_ wchar_t* pszResult 
-	);
+    void RpcAsyncAwaitForEvent( 
+        _In_ PRPC_ASYNC_STATE pState, 
+        _In_ context_handle_t hContext, 
+        _In_ wchar_t* pszResult 
+    );
 
-	void AnalyzeStringAndNotify(
-		_In_ const wchar_t* pszString,
-		_In_ size_t ulSize
-	);
-
-private:
-	CServer() = default;
-
-	//
-	// Prevent any way to create another instance
-	// 
-	CServer( const CServer& ) = delete;
-	CServer& operator=( const CServer& ) = delete;
-	CServer( CServer&& ) = delete;
-	CServer& operator=( CServer&& ) = delete;
+    void AnalyzeStringAndNotify(
+        _In_ const wchar_t* pszString,
+        _In_ size_t ulSize
+    );
 
 private:
-	subscriptions_t	  m_subscriptions;
-	CCriticalSection  m_csSubscriptions;
+    CServer() = default;
 
-	client_controls_t m_calls;
-	CCriticalSection  m_csCalls;
+    //
+    // Prevent any way to create another instance
+    // 
+    CServer( const CServer& ) = delete;
+    CServer& operator=( const CServer& ) = delete;
+    CServer( CServer&& ) = delete;
+    CServer& operator=( CServer&& ) = delete;
+
+private:
+    subscriptions_t      m_subscriptions;
+    CCriticalSection  m_csSubscriptions;
+
+    client_controls_t m_calls;
+    CCriticalSection  m_csCalls;
 };
 
 

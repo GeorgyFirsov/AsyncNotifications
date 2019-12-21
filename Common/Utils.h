@@ -36,9 +36,9 @@
 //
 struct CAsyncControl
 {
-	PRPC_ASYNC_STATE m_pState;
-	context_handle_t m_hContext;
-	wchar_t*		 m_pszResult;
+    PRPC_ASYNC_STATE m_pState;
+    context_handle_t m_hContext;
+    wchar_t*         m_pszResult;
 };
 
 
@@ -61,11 +61,11 @@ struct CAsyncControl
 //
 struct CContextHandle
 {
-	//
-	// This fiels will be shared between several threads,
-	// so it should be atomic
-	// 
-	std::atomic_size_t nSubsciptions = 0;
+    //
+    // This fiels will be shared between several threads,
+    // so it should be atomic
+    // 
+    std::atomic_size_t nSubsciptions = 0;
 };
 
 
@@ -89,29 +89,29 @@ struct CContextHandle
 // 
 inline constexpr auto GetContext( context_handle_t hContext ) 
 { 
-	return static_cast<CContextHandle*>( hContext ); 
+    return static_cast<CContextHandle*>( hContext ); 
 }
 
 
 namespace
 {
-	//
-	// Iteration "terminator" with zero params
-	// 
-	inline void ThreadSafePrintImpl( std::wstringstream& out )
-	{
-		out << std::endl;
-	}
+    //
+    // Iteration "terminator" with zero params
+    // 
+    inline void ThreadSafePrintImpl( std::wstringstream& out )
+    {
+        out << std::endl;
+    }
 
-	//
-	// Main output function with variadic number of arguments
-	// 
-	template<typename T, typename... Ts>
-	void ThreadSafePrintImpl( std::wstringstream& out, T&& first, Ts&&... remaining )
-	{
-		out << std::forward<T>( first );
-		ThreadSafePrintImpl( out, std::forward<Ts>( remaining )... );
-	}
+    //
+    // Main output function with variadic number of arguments
+    // 
+    template<typename T, typename... Ts>
+    void ThreadSafePrintImpl( std::wstringstream& out, T&& first, Ts&&... remaining )
+    {
+        out << std::forward<T>( first );
+        ThreadSafePrintImpl( out, std::forward<Ts>( remaining )... );
+    }
 
 } // anonymous namespace
 
@@ -140,7 +140,7 @@ namespace
 template<typename... Ts>
 void ThreadSafePrint( std::wostream& out, Ts&&... params )
 {
-	std::wstringstream stream;
-	ThreadSafePrintImpl( stream, std::forward<Ts>( params )... );
-	out << stream.str();
+    std::wstringstream stream;
+    ThreadSafePrintImpl( stream, std::forward<Ts>( params )... );
+    out << stream.str();
 }

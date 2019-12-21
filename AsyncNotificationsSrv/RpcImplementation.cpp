@@ -26,12 +26,12 @@
 // ------------------------------------------------------------
 // 
 DWORD RpcOpenSession(
-	/* [in] */ handle_t hFormalParam,
-	/* [out] */ context_handle_t* phContext
+    /* [in] */ handle_t hFormalParam,
+    /* [out] */ context_handle_t* phContext
 )
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
-	return g_Server.RpcOpenSession( hFormalParam, phContext );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
+    return g_Server.RpcOpenSession( hFormalParam, phContext );
 }
 
 
@@ -56,11 +56,11 @@ DWORD RpcOpenSession(
 // ------------------------------------------------------------
 // 
 DWORD RpcCloseSession(
-	/* [out][in] */ context_handle_t* phContext
+    /* [out][in] */ context_handle_t* phContext
 )
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
-	return g_Server.RpcCloseSession( phContext );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
+    return g_Server.RpcCloseSession( phContext );
 }
 
 
@@ -93,12 +93,12 @@ DWORD RpcCloseSession(
 // ------------------------------------------------------------
 // 
 DWORD RpcAddSubscription(
-	/* [out][in] */ context_handle_t* phContext,
-	/* [in] */ wchar_t chToAwait
+    /* [out][in] */ context_handle_t* phContext,
+    /* [in] */ wchar_t chToAwait
 )
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToAwait );
-	return g_Server.RpcAddSubscription( phContext, chToAwait );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToAwait );
+    return g_Server.RpcAddSubscription( phContext, chToAwait );
 }
 
 
@@ -129,12 +129,12 @@ DWORD RpcAddSubscription(
 // ------------------------------------------------------------
 // 
 DWORD RpcCancelSubscription(
-	/* [out][in] */ context_handle_t* phContext,
-	/* [in] */ wchar_t chToCancel
+    /* [out][in] */ context_handle_t* phContext,
+    /* [in] */ wchar_t chToCancel
 )
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToCancel );
-	return g_Server.RpcCancelSubscription( phContext, chToCancel );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received for ", chToCancel );
+    return g_Server.RpcCancelSubscription( phContext, chToCancel );
 }
 
 
@@ -167,12 +167,12 @@ DWORD RpcCancelSubscription(
 // ------------------------------------------------------------
 // 
 /* [async] */ void  RpcAsyncAwaitForEvent(
-	/* [in] */ PRPC_ASYNC_STATE RpcAsyncAwaitForEvent_AsyncHandle,
-	/* [in] */ context_handle_t hContext,
-	/* [size_is][string][out] */ wchar_t* pszResult)
+    /* [in] */ PRPC_ASYNC_STATE RpcAsyncAwaitForEvent_AsyncHandle,
+    /* [in] */ context_handle_t hContext,
+    /* [size_is][string][out] */ wchar_t* pszResult)
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
-	g_Server.RpcAsyncAwaitForEvent( RpcAsyncAwaitForEvent_AsyncHandle, hContext, pszResult );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__, L" call received" );
+    g_Server.RpcAsyncAwaitForEvent( RpcAsyncAwaitForEvent_AsyncHandle, hContext, pszResult );
 }
 
 
@@ -183,8 +183,8 @@ DWORD RpcCancelSubscription(
 
 void __RPC_USER context_handle_t_rundown( context_handle_t hContext )
 {
-	ThreadSafePrint( std::wcout, TID, __FUNCTIONW__ );
-	RpcCloseSession( &hContext );
+    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__ );
+    RpcCloseSession( &hContext );
 }
 
 
@@ -192,14 +192,14 @@ _Must_inspect_result_
 _Ret_maybenull_ _Post_writable_byte_size_( size )
 void* __RPC_USER MIDL_user_allocate( _In_ size_t size )
 {
-	return malloc( size );
+    return malloc( size );
 }
 
 
 void __RPC_USER MIDL_user_free( _Pre_maybenull_ _Post_invalid_ void* ptr )
 {
-	if(ptr) {
-		free( ptr );
-	}
-	ptr = nullptr;
+    if(ptr) {
+        free( ptr );
+    }
+    ptr = nullptr;
 }

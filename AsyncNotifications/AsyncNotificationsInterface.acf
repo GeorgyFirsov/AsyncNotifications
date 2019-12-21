@@ -3,5 +3,5 @@ typedef [context_handle_noserialize] context_handle_t;
 
 interface AsyncNotifications
 {
-	[async] RpcAsyncAwaitForEvent();
+    [async] RpcAsyncAwaitForEvent();
 }
