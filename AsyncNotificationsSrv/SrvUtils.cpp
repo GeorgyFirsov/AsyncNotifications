@@ -45,8 +45,8 @@ DWORD CServer::RpcCloseSession(
 	//
 	// Need to cancel call and remove from subscriptions
 	// 
-	std::lock_guard<std::mutex> subcscriptionsLock( m_mtxSubscriptions );
-	std::lock_guard<std::mutex> callsLock( m_mtxCalls );
+	std::lock_guard<CCriticalSection> subscriptionsLock( m_csSubscriptions );
+	std::lock_guard<CCriticalSection> callsLock( m_csCalls );
 
 	auto call = m_calls.find( *phContext );
 
@@ -57,11 +57,15 @@ DWORD CServer::RpcCloseSession(
 #pragma warning(default: 6031)
 	}
 
-	for(auto& subscription : m_subscriptions) {
-		subscription.second.erase( *phContext );
+	for(auto& subscription : m_subscriptions) 
+	{
+		auto subscriber = subscription.second.find( *phContext );
+		if (subscriber != subscription.second.end()) {
+			subscription.second.erase( *phContext );
+		}
 	}
 
-	delete static_cast<CContextHandle*>(*phContext);
+	delete static_cast<CContextHandle*>( *phContext );
 	*phContext = nullptr;
 
 	return ERROR_SUCCESS;
@@ -81,7 +85,7 @@ DWORD CServer::RpcAddSubscription(
 	//
 	// Lock mutex not to currupt data
 	// 
-	std::lock_guard<std::mutex> lock( m_mtxSubscriptions );
+	std::lock_guard<CCriticalSection> lock( m_csSubscriptions );
 
 	//
 	// Trying to find existing subscriptions for this symbol
@@ -124,7 +128,7 @@ DWORD CServer::RpcCancelSubscription(
 	//
 	// Lock mutex not to currupt data
 	// 
-	std::lock_guard<std::mutex> subcscriptionsLock( m_mtxSubscriptions );
+	std::lock_guard<CCriticalSection> subcscriptionsLock( m_csSubscriptions );
 
 	//
 	// Trying to find existing subscriptions for this symbol
@@ -167,7 +171,7 @@ DWORD CServer::RpcCancelSubscription(
 	// If no more subscriptions for client remains, trying
 	// terminate it's asynchronous call
 	// 
-	std::lock_guard<std::mutex> callsLock( m_mtxCalls );
+	std::lock_guard<CCriticalSection> callsLock( m_csCalls );
 
 	auto callControl = m_calls.find( *phContext );
 
@@ -204,7 +208,7 @@ void CServer::RpcAsyncAwaitForEvent(
 	//
 	// Here we need only to put call params into container
 	// 
-	std::lock_guard<std::mutex> lock( m_mtxCalls );
+	std::lock_guard<CCriticalSection> lock( m_csCalls );
 	m_calls[hContext] = CAsyncControl{ pState, hContext, pszResult };
 }
 
@@ -220,7 +224,7 @@ void CServer::AnalyzeStringAndNotify(
 	// Trying to find subscriptions for this symbol.
 	// If none found, just exit call
 	// 
-	std::lock_guard<std::mutex> subscriptionsLock( m_mtxSubscriptions );
+	std::lock_guard<CCriticalSection> subscriptionsLock( m_csSubscriptions );
 
 	auto subscription = m_subscriptions.find( ch );
 
@@ -234,7 +238,7 @@ void CServer::AnalyzeStringAndNotify(
 	// 
 	auto& subscribers = subscription->second;
 
-	std::lock_guard<std::mutex> callsLock( m_mtxCalls );
+	std::lock_guard<CCriticalSection> callsLock( m_csCalls );
 
 	for (context_handle_t hSubscriber : subscribers) 
 	{
@@ -257,6 +261,9 @@ void CServer::AnalyzeStringAndNotify(
 		// Now it is necessary to erase call
 		// from set.
 		// 
-		m_calls.erase( hSubscriber );
+		auto call = m_calls.find( hSubscriber );
+		if (call != m_calls.end()) {
+			m_calls.erase( hSubscriber );
+		}
 	}
 }

@@ -2,6 +2,26 @@
 #include "SrvIncludes.h"
 
 
+class CCriticalSection
+{
+public:
+	CCriticalSection() { InitializeCriticalSection(&m_cs); }
+	~CCriticalSection() { DeleteCriticalSection(&m_cs); }
+
+	CCriticalSection(const CCriticalSection&) = delete;
+	CCriticalSection& operator=(const CCriticalSection&) = delete;
+	CCriticalSection(CCriticalSection&&) = delete;
+	CCriticalSection& operator=(CCriticalSection&&) = delete;
+
+	void lock() { EnterCriticalSection(&m_cs); }
+	void unlock() { LeaveCriticalSection(&m_cs); }
+	bool try_lock() { return (bool)TryEnterCriticalSection( &m_cs ); }
+
+private:
+	CRITICAL_SECTION m_cs;
+};
+
+
 //
 // Here comes aliases for data-types
 // 
@@ -104,10 +124,10 @@ private:
 
 private:
 	subscriptions_t	  m_subscriptions;
-	std::mutex        m_mtxSubscriptions;
+	CCriticalSection  m_csSubscriptions;
 
 	client_controls_t m_calls;
-	std::mutex        m_mtxCalls;
+	CCriticalSection  m_csCalls;
 };
 
 
