@@ -37,7 +37,7 @@ number of input strings.
 
 Client app will have simple rules applied to it's input:
 - `quit` will close client in common way with all cleaning procedures
-- `exit` will terminate client immediately (by calling `ExitProcess`)
+- `exit` will terminate client immediately (by calling `std::terminate`)
 - `+[a-zA-Z]` will send a subscription request to server
 - `-[a-zA-Z]` will send a cancellation request to server
 - any other string will be ignored
