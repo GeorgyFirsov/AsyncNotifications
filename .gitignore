@@ -338,3 +338,8 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Ignore autogeneraated files
+AsyncNotificationsInterface_h.h
+AsyncNotificationsInterface_c.c
+AsyncNotificationsInterface_s.c
