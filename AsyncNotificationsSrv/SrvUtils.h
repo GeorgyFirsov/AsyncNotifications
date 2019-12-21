@@ -1,6 +1,27 @@
 #pragma once
 #include "SrvIncludes.h"
 
+
+// ----------------------------------------------------------------------
+// Here comes aliases for data-types
+// 
+
+// Character -----------------------|
+// Set of all subscribed clients -- | -----------------|
+//                                  V                  V
+using subscriptions_t = std::map<wchar_t, std::set<context_handle_t>>;
+
+// Client's identifier -------------------|
+// Control block with parameters ---------|----------------|
+//                                        V                V
+using client_controls_t = std::map<context_handle_t, CAsyncControl>;
+
+
+// ----------------------------------------------------------------------
+// Definitions of classes
+// 
+
+
 // ------------------------------------------------------------
 // Class: CCriticalSection
 // Description: wrapper around WinAPI's CRITICAL_SECTION
@@ -41,21 +62,6 @@ public:
 private:
 	CRITICAL_SECTION m_cs;
 };
-
-
-//
-// Here comes aliases for data-types
-// 
-
-// Character -----------------------|
-// Set of all subscribed clients -- | -----------------|
-//                                  V                  V
-using subscriptions_t = std::map<wchar_t, std::set<context_handle_t>>;
-
-// Client's identifier -------------------|
-// Control block with parameters ---------|----------------|
-//                                        V                V
-using client_controls_t = std::map<context_handle_t, CAsyncControl>;
 
 
 // ------------------------------------------------------------
