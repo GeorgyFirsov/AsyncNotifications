@@ -116,7 +116,7 @@ int wmain()
                 //
                 // Abnormal program termination
                 // 
-                ExitProcess( ERROR_CANCELLED );
+                std::terminate();
             }
         }
         else if (*string != L'+' && *string != L'-' || wcslen( string ) != 2) 

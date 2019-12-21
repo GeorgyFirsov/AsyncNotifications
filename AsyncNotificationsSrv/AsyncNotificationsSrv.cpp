@@ -74,7 +74,7 @@ int wmain()
                 //
                 // Abnormal termination
                 // 
-                ExitProcess( ERROR_CANCELLED );
+                std::terminate();
             }
         }
 
