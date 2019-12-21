@@ -1,20 +1,41 @@
 #pragma once
 #include "SrvIncludes.h"
 
-
+// ------------------------------------------------------------
+// Class: CCriticalSection
+// Description: wrapper around WinAPI's CRITICAL_SECTION
+// ------------------------------------------------------------
+// Parameters (for constructors): none
+// 
+// Members:
+//                        m_cs : internal CRITICAL_SECTION instance
+//              
+// Member functions:
+//                   void lock : locks critical section (EnterCriticalSection)
+//                 void unlock : releases critical section (LeaveCriticalSection)
+//               bool try_lock : tries to enter critical section (TryEnterCriticalSection)
+// 
+// Comments: 
+//       Wrapper for using CRITICAL_SECTION with std::lock_guard
+//       
+// ------------------------------------------------------------
+// Author: Georgy Firsov
+// Date: 21.12.2019
+// ------------------------------------------------------------
+//
 class CCriticalSection
 {
 public:
-	CCriticalSection() { InitializeCriticalSection(&m_cs); }
-	~CCriticalSection() { DeleteCriticalSection(&m_cs); }
+	CCriticalSection() { InitializeCriticalSection( &m_cs ); }
+	~CCriticalSection() { DeleteCriticalSection( &m_cs ); }
 
-	CCriticalSection(const CCriticalSection&) = delete;
-	CCriticalSection& operator=(const CCriticalSection&) = delete;
-	CCriticalSection(CCriticalSection&&) = delete;
-	CCriticalSection& operator=(CCriticalSection&&) = delete;
+	CCriticalSection( const CCriticalSection& ) = delete;
+	CCriticalSection& operator=( const CCriticalSection& ) = delete;
+	CCriticalSection( CCriticalSection&& ) = delete;
+	CCriticalSection& operator=( CCriticalSection&& ) = delete;
 
-	void lock() { EnterCriticalSection(&m_cs); }
-	void unlock() { LeaveCriticalSection(&m_cs); }
+	void lock() { EnterCriticalSection( &m_cs ); }
+	void unlock() { LeaveCriticalSection( &m_cs ); }
 	bool try_lock() { return (bool)TryEnterCriticalSection( &m_cs ); }
 
 private:
