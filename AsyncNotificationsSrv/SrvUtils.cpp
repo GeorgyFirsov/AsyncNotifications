@@ -279,7 +279,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        std::wcout << FUNC_FAILURE_STR( RpcServerUseProtseqEp ) << std::endl;
+        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerUseProtseqEp ) );
         return status;
     }
 
@@ -293,7 +293,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        std::wcout << FUNC_FAILURE_STR( RpcServerRegisterIfEx ) << std::endl;
+        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerRegisterIfEx ) );
         return -1;
     }
 
@@ -304,7 +304,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        std::wcout << FUNC_FAILURE_STR( RpcServerListen ) << std::endl;
+        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerListen ) );
         return status;
     }
 
