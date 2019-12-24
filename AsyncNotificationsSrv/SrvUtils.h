@@ -72,14 +72,11 @@ private:
 // Parameters (for constructors): none
 // 
 // Members:
-//                 m_pInstance : pointer to server instance.
-//                   m_fCalled : flag used to initialize instance
-//                             : only once.
 //             m_subscriptions : every subscription grouped by symbol
-//          m_mtxSubscriptions : corresponding mutex
+//           m_csSubscriptions : corresponding critical section
 //                     m_calls : control block and counter for each
 //                             : client's asynchronous call
-//                  m_mtxCalls : corresponding mutex
+//                   m_csCalls : corresponding critical section
 //              
 // Member functions:
 //        DWORD RpcOpenSession : opens client's session and initializes
@@ -162,3 +159,49 @@ private:
 // Macro used to obtain server instance
 // 
 #define g_Server CServer::GetInstance()
+
+
+// ------------------------------------------------------------
+// Function: StartServer
+// Return type: RPC_STATUS
+// Description: initializes server application and performs
+//              necessary for RPC preparations.
+// ------------------------------------------------------------
+// Parameters: none
+// 
+// Return values:
+//                      RPC_S_OK : function succeeded
+//                    error code : in case of any error. See
+//                               : output for more information
+//                               : about the error.
+// 
+// Comments: 
+//     You shold explicitly call StopServer function at exit
+//     from main function.
+// 
+// ------------------------------------------------------------
+// Author: Georgy Firsov
+// Date: 15.12.2019
+// ------------------------------------------------------------
+// 
+RPC_STATUS StartServer();
+
+
+// ------------------------------------------------------------
+// Function: StopServer
+// Return type: void
+// Description: performs final clean-up at process' exit
+// ------------------------------------------------------------
+// Parameters: none
+// 
+// Return values: none
+// 
+// Comments: 
+//     You should explicitly call this function before exiting
+//     from main.
+// ------------------------------------------------------------
+// Author: Georgy Firsov
+// Date: 15.12.2019
+// ------------------------------------------------------------
+// 
+void StopServer();
