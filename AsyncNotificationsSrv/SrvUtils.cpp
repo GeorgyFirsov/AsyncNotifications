@@ -271,44 +271,44 @@ void CServer::AnalyzeStringAndNotify(
 
 RPC_STATUS StartServer()
 {
-	RPC_STATUS status = ::RpcServerUseProtseqEp(
-		(RPC_WSTR)pszDefaultProtocol,
-		RPC_C_PROTSEQ_MAX_REQS_DEFAULT,
-		(RPC_WSTR)pszDefaultEndpoint,
-		nullptr
-	);
-	if (status != RPC_S_OK)
-	{
-		std::wcout << FUNC_FAILURE_STR( RpcServerUseProtseqEp ) << std::endl;
-		return status;
-	}
+    RPC_STATUS status = ::RpcServerUseProtseqEp(
+        (RPC_WSTR)pszDefaultProtocol,
+        RPC_C_PROTSEQ_MAX_REQS_DEFAULT,
+        (RPC_WSTR)pszDefaultEndpoint,
+        nullptr
+    );
+    if (status != RPC_S_OK)
+    {
+        std::wcout << FUNC_FAILURE_STR( RpcServerUseProtseqEp ) << std::endl;
+        return status;
+    }
 
-	status = ::RpcServerRegisterIfEx(
-		AsyncNotifications_v1_0_s_ifspec,
-		nullptr,
-		nullptr,
-		0,
-		RPC_C_LISTEN_MAX_CALLS_DEFAULT,
-		nullptr
-	);
-	if (status != RPC_S_OK)
-	{
-		std::wcout << FUNC_FAILURE_STR( RpcServerRegisterIfEx ) << std::endl;
-		return -1;
-	}
+    status = ::RpcServerRegisterIfEx(
+        AsyncNotifications_v1_0_s_ifspec,
+        nullptr,
+        nullptr,
+        0,
+        RPC_C_LISTEN_MAX_CALLS_DEFAULT,
+        nullptr
+    );
+    if (status != RPC_S_OK)
+    {
+        std::wcout << FUNC_FAILURE_STR( RpcServerRegisterIfEx ) << std::endl;
+        return -1;
+    }
 
-	status = ::RpcServerListen(
-		1,
-		RPC_C_LISTEN_MAX_CALLS_DEFAULT,
-		TRUE
-	);
-	if (status != RPC_S_OK)
-	{
-		std::wcout << FUNC_FAILURE_STR( RpcServerListen ) << std::endl;
-		return status;
-	}
+    status = ::RpcServerListen(
+        1,
+        RPC_C_LISTEN_MAX_CALLS_DEFAULT,
+        TRUE
+    );
+    if (status != RPC_S_OK)
+    {
+        std::wcout << FUNC_FAILURE_STR( RpcServerListen ) << std::endl;
+        return status;
+    }
 
-	return RPC_S_OK;
+    return RPC_S_OK;
 }
 
 

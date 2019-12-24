@@ -10,9 +10,9 @@ int wmain()
     // Here I initialize server application
     // 
     RPC_STATUS status = StartServer();
-	if (status != RPC_S_OK) {
-		return -1;
-	}
+    if (status != RPC_S_OK) {
+        return -1;
+    }
 
     //
     // Main event loop
@@ -55,7 +55,7 @@ int wmain()
     //
     // Тут теперь надо всё почистить
     // 
-	StopServer();
+    StopServer();
 
     return 0;
 }
