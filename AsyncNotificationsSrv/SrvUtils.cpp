@@ -10,13 +10,15 @@ CServer& CServer::GetInstance()
 
 _Check_return_
 DWORD CServer::RpcOpenSession(
-    _In_ handle_t hFormalParam,
+    _In_ handle_t /* hFormalParam */,
     _Out_ context_handle_t* phContext
 )
 {
-    UNREFERENCED_PARAMETER(hFormalParam);
+    DEBUG_TRACE( DL_EXTENDED, L"phContext = ", phContext );
 
-    if (!phContext) {
+    if (!phContext) 
+    {
+        DEBUG_TRACE( DL_CRITICAL, FUNCTION_FAILED_WITH( ERROR_INVALID_PARAMETER ) );
         return ERROR_INVALID_PARAMETER;
     }
 
@@ -26,6 +28,7 @@ DWORD CServer::RpcOpenSession(
     }
     catch (const std::bad_alloc&)
     {
+        DEBUG_TRACE( DL_CRITICAL, FUNCTION_FAILED_WITH( ERROR_NOT_ENOUGH_MEMORY ) );
         return ERROR_NOT_ENOUGH_MEMORY;
     }
 
@@ -38,15 +41,19 @@ DWORD CServer::RpcCloseSession(
     _Inout_ context_handle_t* phContext
 )
 {
-    if (!phContext) {
+    DEBUG_TRACE( DL_EXTENDED, L"phContext = ", phContext );
+
+    if (!phContext) 
+    {
+        DEBUG_TRACE( DL_CRITICAL, FUNCTION_FAILED_WITH( ERROR_INVALID_PARAMETER ) );
         return ERROR_INVALID_PARAMETER;
     }
 
     //
     // Need to cancel call and remove from subscriptions
     // 
-    std::lock_guard<CCriticalSection> subscriptionsLock( m_csSubscriptions );
-    std::lock_guard<CCriticalSection> callsLock( m_csCalls );
+    critical_section_guard subscriptionsLock( m_csSubscriptions );
+    critical_section_guard callsLock( m_csCalls );
 
     auto call = m_calls.find( *phContext );
 
@@ -74,18 +81,16 @@ DWORD CServer::RpcCloseSession(
 
 _Check_return_
 DWORD CServer::RpcAddSubscription( 
-    _Inout_ context_handle_t* phContext, 
+    _In_ context_handle_t hContext, 
     _In_ wchar_t chToAwait 
 )
 {
-    if(!phContext) {
-        return ERROR_INVALID_PARAMETER;
-    }
+    DEBUG_TRACE( DL_EXTENDED, L"hContext = ", hContext );
 
     //
     // Lock mutex not to currupt data
     // 
-    std::lock_guard<CCriticalSection> lock( m_csSubscriptions );
+    critical_section_guard lock( m_csSubscriptions );
 
     //
     // Trying to find existing subscriptions for this symbol
@@ -102,13 +107,13 @@ DWORD CServer::RpcAddSubscription(
     //
     // Add context handle to set of all subscribers
     // 
-    bool bIsInserted = subscription->second.emplace( *phContext ).second;
+    bool bIsInserted = subscription->second.emplace( hContext ).second;
 
     //
     // Increment subscriptions' counter in context handle
     // 
     if (bIsInserted) {
-        GetContext( *phContext )->nSubsciptions++;
+        GetContext( hContext )->nSubscriptions++;
     }
 
     return ERROR_SUCCESS;
@@ -117,18 +122,16 @@ DWORD CServer::RpcAddSubscription(
 
 _Check_return_
 DWORD CServer::RpcCancelSubscription( 
-    _Inout_ context_handle_t* phContext, 
+    _In_ context_handle_t hContext, 
     _In_ wchar_t chToCancel 
 )
 {
-    if (!phContext) {
-        return ERROR_INVALID_PARAMETER;
-    }
+    DEBUG_TRACE( DL_EXTENDED, L"hContext = ", hContext );
 
     //
     // Lock mutex not to currupt data
     // 
-    std::lock_guard<CCriticalSection> subcscriptionsLock( m_csSubscriptions );
+    critical_section_guard subcscriptionsLock( m_csSubscriptions );
 
     //
     // Trying to find existing subscriptions for this symbol
@@ -139,7 +142,7 @@ DWORD CServer::RpcCancelSubscription(
     // If none found, just return
     // 
     if (subscription == m_subscriptions.end()){
-        return ERROR_SUCCESS;
+        return ERROR_NOT_FOUND;
     }
 
     auto& clients = subscription->second;
@@ -147,7 +150,7 @@ DWORD CServer::RpcCancelSubscription(
     //
     // Remove current client (if exists)
     // 
-    size_t nErased = clients.erase( *phContext );
+    size_t nErased = clients.erase( hContext );
 
     if(clients.empty()) {
         m_subscriptions.erase( subscription );
@@ -157,13 +160,13 @@ DWORD CServer::RpcCancelSubscription(
     // Decrement internal client's counter
     // 
     if (nErased > 0) {
-        GetContext( *phContext )->nSubsciptions--;
+        GetContext( hContext )->nSubscriptions--;
     }
 
     //
     // Return if there are another subscriptions for this client
     // 
-    if(GetContext( *phContext )->nSubsciptions) {
+    if(GetContext( hContext )->nSubscriptions) {
         return ERROR_SUCCESS;
     }
 
@@ -171,9 +174,9 @@ DWORD CServer::RpcCancelSubscription(
     // If no more subscriptions for client remains, trying
     // terminate it's asynchronous call
     // 
-    std::lock_guard<CCriticalSection> callsLock( m_csCalls );
+    critical_section_guard callsLock( m_csCalls );
 
-    auto callControl = m_calls.find( *phContext );
+    auto callControl = m_calls.find( hContext );
 
     if(callControl == m_calls.end()) 
     {
@@ -199,17 +202,40 @@ DWORD CServer::RpcCancelSubscription(
 }
 
 
+_Check_return_
+DWORD CServer::RpcGetSubscriptionsCount( 
+    _In_ context_handle_t hContext 
+)
+{
+    DEBUG_TRACE( DL_EXTENDED, L"hContext = ", hContext );
+
+    //
+    // Just look at atomic counter
+    // 
+    return static_cast<DWORD>( 
+        GetContext( hContext )->nSubscriptions 
+    );
+}
+
+
 void CServer::RpcAsyncAwaitForEvent( 
     _In_ PRPC_ASYNC_STATE pState, 
     _In_ context_handle_t hContext, 
     _In_ wchar_t* pszResult 
 )
 {
+    DEBUG_TRACE( 
+        DL_EXTENDED, 
+        ON_NEW_LINE L"pState    = ", pState,
+        ON_NEW_LINE L"hContext  = ", hContext,
+        ON_NEW_LINE L"pszResult = ", AS_PTR( pszResult )
+    );
+
     //
     // Here we need only to put call params into container
     // 
-    std::lock_guard<CCriticalSection> lock( m_csCalls );
-    m_calls[hContext] = CAsyncControl{ pState, hContext, pszResult };
+    critical_section_guard lock( m_csCalls );
+    m_calls[hContext] = CAsyncParams{ pState, hContext, pszResult };
 }
 
 
@@ -218,13 +244,15 @@ void CServer::AnalyzeStringAndNotify(
     _In_ size_t ulSize 
 )
 {
+    TRACE_FUNC;
+
     wchar_t ch = *pszString;
 
     //
     // Trying to find subscriptions for this symbol.
     // If none found, just exit call
     // 
-    std::lock_guard<CCriticalSection> subscriptionsLock( m_csSubscriptions );
+    critical_section_guard subscriptionsLock( m_csSubscriptions );
 
     auto subscription = m_subscriptions.find( ch );
 
@@ -238,11 +266,11 @@ void CServer::AnalyzeStringAndNotify(
     // 
     auto& subscribers = subscription->second;
 
-    std::lock_guard<CCriticalSection> callsLock( m_csCalls );
+    critical_section_guard callsLock( m_csCalls );
 
     for (context_handle_t hSubscriber : subscribers) 
     {
-        CAsyncControl& control = m_calls[hSubscriber];
+        CAsyncParams& control = m_calls[hSubscriber];
 
         PRPC_ASYNC_STATE pState = control.m_pState;
         wchar_t* pszResult = control.m_pszResult;
@@ -269,8 +297,39 @@ void CServer::AnalyzeStringAndNotify(
 }
 
 
+void CServer::AbortAll()
+{
+    TRACE_FUNC;
+
+    //
+    // Lock critical section and clear container with subscriptions
+    // 
+    critical_section_guard subcriptionsLock( m_csSubscriptions );
+    m_subscriptions.clear();
+
+    //
+    // Lock critical section and abort all async calls
+    // 
+    critical_section_guard callsLock( m_csCalls );
+    
+    for(auto& call : m_calls) 
+    {
+        DEBUG_TRACE( DL_EXTENDED, L"Cancelling for ", call.first );
+
+#pragma warning(disable: 6031)  // Return value ignored
+        ::RpcAsyncAbortCall( call.second.m_pState, ERROR_CANCELLED );
+#pragma warning(default: 6031)
+    }
+
+    m_calls.clear();
+}
+
+
+_Check_return_
 RPC_STATUS StartServer()
 {
+    TRACE_FUNC;
+
     RPC_STATUS status = ::RpcServerUseProtseqEp(
         (RPC_WSTR)pszDefaultProtocol,
         RPC_C_PROTSEQ_MAX_REQS_DEFAULT,
@@ -279,7 +338,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerUseProtseqEp ) );
+        TRACE_LINE( FUNC_FAILURE_STR( RpcServerUseProtseqEp ) );
         return status;
     }
 
@@ -293,7 +352,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerRegisterIfEx ) );
+        TRACE_LINE( FUNC_FAILURE_STR( RpcServerRegisterIfEx ) );
         return -1;
     }
 
@@ -304,7 +363,7 @@ RPC_STATUS StartServer()
     );
     if (status != RPC_S_OK)
     {
-        ThreadSafePrint( std::wcout, FUNC_FAILURE_STR( RpcServerListen ) );
+        TRACE_LINE( FUNC_FAILURE_STR( RpcServerListen ) );
         return status;
     }
 
@@ -314,8 +373,15 @@ RPC_STATUS StartServer()
 
 void StopServer()
 {
+    TRACE_FUNC;
+
+    //
+    // Cancel all async calls first
+    // 
+    g_Server.AbortAll();
+
 #pragma warning(disable: 6031)  // Return value ignored
     ::RpcMgmtStopServerListening( nullptr );
-    ::RpcServerUnregisterIf( nullptr, nullptr, TRUE );
+    ::RpcServerUnregisterIf( nullptr, nullptr, FALSE );
 #pragma warning(default: 6031)
 }

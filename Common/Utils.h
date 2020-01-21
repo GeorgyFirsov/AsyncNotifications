@@ -8,10 +8,6 @@
 
 #include "../AsyncNotifications/AsyncNotificationsInterface_h.h"
 
-#define FUNC_FAILURE_STR( _func ) TEXT( #_func ) L" failed. "
-
-#define TID L"[", std::this_thread::get_id(), L"] "
-
 
 // ------------------------------------------------------------
 // Class: CAsyncControl
@@ -34,7 +30,7 @@
 // Date: 15.12.2019
 // ------------------------------------------------------------
 //
-struct CAsyncControl
+struct CAsyncParams
 {
     PRPC_ASYNC_STATE m_pState;
     context_handle_t m_hContext;
@@ -65,7 +61,7 @@ struct CContextHandle
     // This fiels will be shared between several threads,
     // so it should be atomic
     // 
-    std::atomic_size_t nSubsciptions = 0;
+    std::atomic_size_t nSubscriptions = 0;
 };
 
 

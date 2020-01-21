@@ -4,17 +4,17 @@
 
 int wmain()
 {
-    ThreadSafePrint( std::wcout, TID, L"Main" );
+    TRACE_FUNC;
 
     //
     // Client's registration
     // 
-    RPC_WSTR        pszBindingString = nullptr;
-    HANDLE          hBinding = nullptr;
-    HANDLE          hWaitThread = nullptr;
-    CContextHandle* hContext = nullptr;
-    wchar_t         pszResult[dwMaxStringLength] = { 0 };
-    RPC_ASYNC_STATE state;
+    RPC_WSTR         pszBindingString = nullptr;
+    HANDLE           hBinding = nullptr;
+    HANDLE           hWaitThread = nullptr;
+    context_handle_t hContext = nullptr;
+    wchar_t          pszResult[dwMaxStringLength] = { 0 };
+    RPC_ASYNC_STATE  state;
 
     RPC_STATUS status = ::RpcStringBindingCompose(
         nullptr,
@@ -26,7 +26,7 @@ int wmain()
     );
     if (status != RPC_S_OK) 
     {
-        ThreadSafePrint( std::wcout, TID, FUNC_FAILURE_STR( RpcStringBindingCompose ) );
+        DEBUG_TRACE( DL_CRITICAL, FUNC_FAILURE_STR( RpcStringBindingCompose) );
         return -1;
     }
 
@@ -36,29 +36,23 @@ int wmain()
     );
     if (status != RPC_S_OK) 
     {
-        ThreadSafePrint( std::wcout, TID, FUNC_FAILURE_STR( RpcBindingFromStringBinding ) );
+        DEBUG_TRACE( DL_CRITICAL, FUNC_FAILURE_STR( RpcBindingFromStringBinding ) );
         return -1;
     }
 
     RpcTryExcept
     {
-        DWORD dwResult = RpcOpenSession(
-            hBinding,
-            reinterpret_cast<context_handle_t*>( &hContext )
-        );
+        DWORD dwResult = RpcOpenSession( hBinding, &hContext );
         if (dwResult != ERROR_SUCCESS) 
         {
-            ThreadSafePrint( std::wcout, TID, FUNC_FAILURE_STR( RpcOpenSession ) );
+            DEBUG_TRACE( DL_CRITICAL, FUNC_FAILURE_STR( RpcOpenSession ) );
             return -1;
         }
     }
     RpcExcept ( EXCEPTION_EXECUTE_HANDLER )
     {
-        ThreadSafePrint( 
-            std::wcout, 
-            TID, 
-            L"RPC call (RpcOpenSession) fatal error with code: ", 
-            RpcExceptionCode() 
+        DEBUG_TRACE( 
+            DL_CRITICAL, FUNC_FAILURE_STR( RpcOpenSession ), L"Error code: ", RpcExceptionCode()
         );
         return -1;
     }
@@ -70,7 +64,7 @@ int wmain()
     );
     if (status != RPC_S_OK)
     {
-        ThreadSafePrint( std::wcout, TID, FUNC_FAILURE_STR( RpcAsyncInitializeHandle ) );
+        DEBUG_TRACE( DL_CRITICAL, FUNC_FAILURE_STR( RpcAsyncInitializeHandle ) );
         return -1;
     }
 
@@ -79,12 +73,8 @@ int wmain()
 
     if (!state.u.hEvent)
     {
-        ThreadSafePrint( 
-            std::wcout, 
-            TID, 
-            FUNC_FAILURE_STR( CreateEvent ), 
-            L"Code: ", 
-            GetLastError() 
+        DEBUG_TRACE( 
+            DL_CRITICAL, FUNC_FAILURE_STR( CreateEvent ), L"Error code: ", GetLastError() 
         );
         return -1;
     }
@@ -131,30 +121,24 @@ int wmain()
         {
             RpcTryExcept
             {                
-                DWORD dwReply = RpcAddSubscription( 
-                    reinterpret_cast<context_handle_t*>( &hContext ), 
-                    string[1] 
-                );
+                DWORD dwReply = RpcAddSubscription( hContext, string[1] );
 
-                ThreadSafePrint( std::wcout, TID, L"RpcAddSubscription returned ", dwReply );
+                TRACE_DATA( L"RpcAddSubscription returned ", dwReply );
 
                 if (dwReply == ERROR_SUCCESS)
                 {
                     StartWaitRoutine( 
                         &hWaitThread, 
                         &state, 
-                        reinterpret_cast<context_handle_t*>( &hContext ),
+                        &hContext,
                         pszResult 
                     );
                 }
             }
             RpcExcept ( EXCEPTION_EXECUTE_HANDLER )
             {
-                ThreadSafePrint( 
-                    std::wcout, 
-                    TID, 
-                    L"RPC call (RpcAddSubscription) fatal error with code: ", 
-                    RpcExceptionCode() 
+                DEBUG_TRACE(
+                    DL_CRITICAL, FUNC_FAILURE_STR( RpcAddSubscription ), L"Error code: ", RpcExceptionCode()
                 );
             }
             RpcEndExcept
@@ -163,21 +147,18 @@ int wmain()
         {
             RpcTryExcept
             {
-                DWORD dwReply = RpcCancelSubscription( (context_handle_t*)&hContext, string[1] );
+                DWORD dwReply = RpcCancelSubscription( hContext, string[1] );
 
-                ThreadSafePrint( std::wcout, TID, L"RpcCancelSubscription returned ", dwReply );
+                TRACE_DATA( L"RpcCancelSubscription returned ", dwReply );
 
                 if (dwReply != ERROR_SUCCESS && dwReply != ERROR_NOT_FOUND) {
-                    ThreadSafePrint( std::wcout, TID, L"Cannot cancel the subscription on '", string[1], L"'" );
+                    TRACE_DATA( L"Cannot cancel the subscription on '", string[1], L"'" );
                 }
             }
             RpcExcept ( EXCEPTION_EXECUTE_HANDLER )
             {
-                ThreadSafePrint( 
-                    std::wcout, 
-                    TID, 
-                    L"RPC call (RpcCancelSubscription) fatal error with code: ", 
-                    RpcExceptionCode() 
+                DEBUG_TRACE(
+                    DL_CRITICAL, FUNC_FAILURE_STR( RpcCancelSubscription ), L"Error code: ", RpcExceptionCode()
                 );
             }
             RpcEndExcept
@@ -190,15 +171,12 @@ int wmain()
     // 
     RpcTryExcept
     {
-        if (hContext) RpcCloseSession( reinterpret_cast<context_handle_t*>( &hContext ) );
+        if (hContext) RpcCloseSession( &hContext );
     }
     RpcExcept ( EXCEPTION_EXECUTE_HANDLER )
     {
-        ThreadSafePrint(
-            std::wcout,
-            TID,
-            L"RPC call (RpcCloseSession) fatal error with code: ",
-            RpcExceptionCode()
+        DEBUG_TRACE(
+            DL_CRITICAL, FUNC_FAILURE_STR( RpcCloseSession ), L"Error code: ", RpcExceptionCode()
         );
     }
     RpcEndExcept

@@ -14,11 +14,11 @@ using subscriptions_t = std::map<wchar_t, std::set<context_handle_t>>;
 // Client's identifier -------------------|
 // Control block with parameters ---------|----------------|
 //                                        V                V
-using client_controls_t = std::map<context_handle_t, CAsyncControl>;
+using client_controls_t = std::map<context_handle_t, CAsyncParams>;
 
 
 // ----------------------------------------------------------------------
-// Definitions of classes
+// Declarations of classes
 // 
 
 
@@ -64,6 +64,9 @@ private:
 };
 
 
+using critical_section_guard = std::lock_guard<CCriticalSection>;
+
+
 // ------------------------------------------------------------
 // Class: CServer
 // Description: it is an abstraction over RPC server. It provides
@@ -96,32 +99,37 @@ private:
 // Date: 15.12.2019
 // ------------------------------------------------------------
 //
-class CServer
+class CServer final
 {
 public:
     static CServer& GetInstance();
 
     _Check_return_
     DWORD RpcOpenSession(
-        _In_ handle_t hFormalParam, 
-        _Out_ context_handle_t *phContext
+        _In_ handle_t /* hFormalParam */, 
+        _Out_ context_handle_t* phContext
     );
 
     _Check_return_
     DWORD RpcCloseSession(
-        _Inout_ context_handle_t *phContext
+        _Inout_ context_handle_t* phContext
     );
 
     _Check_return_
     DWORD RpcAddSubscription( 
-        _Inout_ context_handle_t* phContext, 
+        _In_ context_handle_t hContext, 
         _In_ wchar_t chToAwait 
     );
     
     _Check_return_
     DWORD RpcCancelSubscription( 
-        _Inout_ context_handle_t* phContext, 
+        _In_ context_handle_t hContext, 
         _In_ wchar_t chToCancel 
+    );
+
+    _Check_return_
+    DWORD RpcGetSubscriptionsCount(
+        _In_ context_handle_t hContext
     );
 
     void RpcAsyncAwaitForEvent( 
@@ -135,6 +143,8 @@ public:
         _In_ size_t ulSize
     );
 
+    void AbortAll();
+
 private:
     CServer() = default;
 
@@ -147,7 +157,7 @@ private:
     CServer& operator=( CServer&& ) = delete;
 
 private:
-    subscriptions_t      m_subscriptions;
+    subscriptions_t   m_subscriptions;
     CCriticalSection  m_csSubscriptions;
 
     client_controls_t m_calls;
@@ -159,6 +169,11 @@ private:
 // Macro used to obtain server instance
 // 
 #define g_Server CServer::GetInstance()
+
+
+// ----------------------------------------------------------------------
+// Declarations of functions
+// 
 
 
 // ------------------------------------------------------------
@@ -184,6 +199,7 @@ private:
 // Date: 15.12.2019
 // ------------------------------------------------------------
 // 
+_Check_return_
 RPC_STATUS StartServer();
 
 

@@ -38,14 +38,18 @@ interface AsyncNotifications
     // Subscription utilites
     // 
     DWORD RpcAddSubscription(
-        [in, out] context_handle_t* phContext,
+        [in] context_handle_t hContext,
         [in] wchar_t chToAwait
     );
 
     DWORD RpcCancelSubscription(
-        [in, out] context_handle_t* phContext,
+        [in] context_handle_t hContext,
         [in] wchar_t chToCancel
     );
+
+	DWORD RpcGetSubscriptionsCount(
+		[in] context_handle_t hContext
+	);
 
     //
     // Asynchronous procedure, that awaits an event

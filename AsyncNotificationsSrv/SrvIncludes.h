@@ -18,4 +18,10 @@
 
 // Project header files
 #include "../Common/Utils.h"
+#include "../Common/Trace.h"
 #include "../AsyncNotifications/AsyncNotificationsInterface_h.h"
+
+// ----------------------------------------------------------------------
+// Project settings
+// 
+DECLARE_DEBUG_LEVEL( DL_ALL );

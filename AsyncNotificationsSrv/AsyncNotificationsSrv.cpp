@@ -4,7 +4,7 @@
 
 int wmain()
 {
-    ThreadSafePrint( std::wcout, TID, L"Main" );
+    TRACE_FUNC;
 
     //
     // Here I initialize server application

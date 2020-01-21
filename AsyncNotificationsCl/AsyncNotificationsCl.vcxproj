@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AsyncNotifications\AsyncNotificationsInterface_h.h" />
+    <ClInclude Include="..\Common\Trace.h" />
     <ClInclude Include="..\Common\Utils.h" />
     <ClInclude Include="ClIncludes.h" />
     <ClInclude Include="ClUtils.h" />

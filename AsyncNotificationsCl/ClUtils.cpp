@@ -8,7 +8,7 @@ void StartWaitRoutine(
     wchar_t* pszResult 
 )
 {
-    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__ );
+    TRACE_FUNC;
 
     RPC_STATUS status = ::RpcAsyncGetCallStatus( pState );
     if (status == RPC_S_CALLPENDING || status == ERROR_IO_PENDING) 
@@ -32,7 +32,7 @@ void StartWaitRoutine(
     //
     // Will be deleted in waiting function
     // 
-    auto pParams = new CAsyncControl{ pState, *phContext, pszResult };
+    auto pParams = new CAsyncParams{ pState, *phContext, pszResult };
 
     *phWaitThread = ::CreateThread(
         nullptr,
@@ -47,9 +47,9 @@ void StartWaitRoutine(
 
 DWORD CallAndWaitForSignal( LPVOID lpParam )
 {
-    ThreadSafePrint( std::wcout, TID, __FUNCTIONW__ );
+    TRACE_FUNC;
 
-    CAsyncControl params = *(CAsyncControl*)lpParam;
+    CAsyncParams params = *(CAsyncParams*)lpParam;
 
     while (true)
     {
@@ -72,17 +72,17 @@ DWORD CallAndWaitForSignal( LPVOID lpParam )
 
         if (status != RPC_S_OK)
         {
-            ThreadSafePrint( std::wcout, TID, L"RpcAsyncAwaitForEvent was terminated by server" );
+            TRACE_LINE( L"RpcAsyncAwaitForEvent was terminated by server" );
             break;
         }
 
-        ThreadSafePrint( std::wcout, TID, L"Function returned: ", params.m_pszResult );
+        TRACE_DATA( L"Function returned: ", params.m_pszResult );
     }
 
     //
     // Normal exit from thread
     // 
-    delete (CAsyncControl*)lpParam;
+    delete (CAsyncParams*)lpParam;
 
     return ERROR_SUCCESS;
 }
