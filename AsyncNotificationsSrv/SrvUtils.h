@@ -148,12 +148,12 @@ public:
 private:
     CServer() = default;
 
-	_Check_return_
-	RPC_STATUS SafeCompleteCall( 
-		_In_ PRPC_ASYNC_STATE pState,
-		_In_ context_handle_t hSubscriber,
-		_In_ std::set<context_handle_t>& subscribers
-	);
+    _Check_return_
+    RPC_STATUS SafeCompleteCall( 
+        _In_ PRPC_ASYNC_STATE pState,
+        _In_ context_handle_t hSubscriber,
+        _In_ std::set<context_handle_t>& subscribers
+    );
 
     //
     // Prevent any way to create another instance
