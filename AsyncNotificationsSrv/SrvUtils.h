@@ -91,6 +91,8 @@ using critical_section_guard = std::lock_guard<CCriticalSection>;
 //  void RpcAsyncAwaitForEvent : registers asyncronous call in m_calls
 // void AnalyzeStringAndNotify : receives input string and send it
 //                             : to all its' subscribers
+// RPC_STATUS SafeCompleteCall : wrapper over RpcAsyncCompleteCall to
+//                             : allow RpcTryExcept
 // 
 // Comments: 
 //       
