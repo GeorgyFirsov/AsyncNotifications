@@ -279,11 +279,11 @@ void CServer::AnalyzeStringAndNotify(
         // Writing result and notifying the client
         // 
         wcscpy_s( pszResult, ulSize, pszString );
-        DWORD dwResult = ERROR_SUCCESS;
+        RPC_STATUS status = SafeCompleteCall( pState, hSubscriber, subscribers );
 
-#pragma warning(disable: 6031) // Return value ignored : 'RpcAsyncCompleteCall'
-        ::RpcAsyncCompleteCall( pState, &dwResult );
-#pragma warning(default: 6031)
+		if (status != RPC_S_OK){
+			continue;
+		}
 
         //
         // Now it is necessary to erase call
@@ -326,6 +326,39 @@ void CServer::AbortAll()
 
 
 _Check_return_
+RPC_STATUS CServer::SafeCompleteCall( 
+	_In_ PRPC_ASYNC_STATE pState, 
+	_In_ context_handle_t hSubscriber,
+	_In_ std::set<context_handle_t>& subscribers
+)
+{
+	//
+	// Critical section over calls should be locked outside
+	// 
+
+	RPC_STATUS status = RPC_S_OK;
+
+	RpcTryExcept
+	{
+#pragma warning(disable: 6031) // Return value ignored : 'RpcAsyncCompleteCall'
+		::RpcAsyncCompleteCall( pState, &status );
+#pragma warning(default: 6031)
+	}
+	RpcExcept( EXCEPTION_EXECUTE_HANDLER )
+	{
+		TRACE_LINE( L"Parameters are not valid (dead client). Removing..." );
+		subscribers.erase( hSubscriber );
+		m_calls.erase( hSubscriber );
+
+		status = RpcExceptionCode();
+	}
+	RpcEndExcept
+
+	return status;
+}
+
+
+_Check_return_
 RPC_STATUS StartServer()
 {
     TRACE_FUNC;
@@ -353,7 +386,7 @@ RPC_STATUS StartServer()
     if (status != RPC_S_OK)
     {
         TRACE_LINE( FUNC_FAILURE_STR( RpcServerRegisterIfEx ) );
-        return -1;
+        return status;
     }
 
     status = ::RpcServerListen(

@@ -8,6 +8,7 @@
 // Strings with message of functions failure
 // 
 #define FUNC_FAILURE_STR( _func ) L#_func L" failed. "
+#define FUNC_FAILURE_STR_A( _func ) #_func " failed. "
 #define FUNCTION_FAILED_WITH( _code ) __FUNCTIONW__ L"failed. Returning: ", _code 
 
 //

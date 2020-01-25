@@ -14,6 +14,7 @@
 // Parameters (for constructors): none
 // 
 // Members:
+//       m_bNewWaitThreadNeeded : flag that means that no waiting thread exists
 //                      m_state : state used by MS RPC
 //                   m_szResult : string to store result of async call
 //                    m_pParams : pointer to parameters passed 
@@ -59,6 +60,7 @@ public:
     _Check_return_
     DWORD RpcCancelSubscription( _In_ wchar_t chToCancel );
 
+    _Check_return_
     DWORD OnWaitCompleted();
 
 private:
@@ -77,12 +79,16 @@ private:
     _Check_return_
     DWORD GetSubscriptionsCount();
 
+    void CleanUpWait();
+
 private:
+    std::atomic_bool m_bNewWaitThreadNeeded;
+
     RPC_ASYNC_STATE m_state;
 
-    wchar_t m_szResult[dwMaxStringLength];
-
     PTP_WAIT m_pWait = nullptr;
+
+    wchar_t m_szResult[dwMaxStringLength];
 
     std::unique_ptr<CAsyncParams> m_pParams;
 };
@@ -94,50 +100,28 @@ private:
 
 
 // ------------------------------------------------------------
-// Function: StartWaitRoutine
+// Function: WaitCompletedCallback
 // Return type: void
-// Description: starts waiting thread
+// Description: callback called as async procedure returns
 // ------------------------------------------------------------
 // Parameters:
-//                  phWaitThread : pointer to thread handle
-//                        pState : state, that identifies
-//                               : asynchronous call
-//                     phContext : context handle
-//                     pszResult : output string
+//                      Instance : unused
+//                       Context : pointer to CClient object 
+//                               : corresponding to async call
+//                          Wait : unused
+//                    WaitResult : unused
 // Return values: none
 // 
 // Comments:
 // 
 // ------------------------------------------------------------
 // Author: Georgy Firsov
-// Date: 21.12.2019
+// Date: 25.01.2020
 // ------------------------------------------------------------
-// 
-void StartWaitRoutine(
-    HANDLE* phWaitThread,
-    PRPC_ASYNC_STATE pState,
-    context_handle_t* phContext,
-    wchar_t* pszResult
+//
+VOID NTAPI WaitCompletedCallback(
+    _Inout_ PTP_CALLBACK_INSTANCE /* Instance */,
+    _Inout_opt_ PVOID Context,
+    _Inout_ PTP_WAIT /* Wait */,
+    _In_ TP_WAIT_RESULT /* WaitResult */
 );
-
-
-// ------------------------------------------------------------
-// Function: CallAndWaitForSignal
-// Return type: DWORD
-// Description: calls an asynchronous function and waits for completion
-// ------------------------------------------------------------
-// Parameters:
-//                       lpParam : pointer to buffer, that contains
-//                               : call's data
-// Return values:
-//                 ERROR_SUCCESS : function completed normally
-//                     Undefined : in case of termination
-// 
-// Comments: 
-// 
-// ------------------------------------------------------------
-// Author: Georgy Firsov
-// Date: 21.12.2019
-// ------------------------------------------------------------
-// 
-DWORD WINAPI CallAndWaitForSignal( LPVOID lpParam );
