@@ -47,9 +47,9 @@ interface AsyncNotifications
         [in] wchar_t chToCancel
     );
 
-	DWORD RpcGetSubscriptionsCount(
-		[in] context_handle_t hContext
-	);
+    DWORD RpcGetSubscriptionsCount(
+        [in] context_handle_t hContext
+    );
 
     //
     // Asynchronous procedure, that awaits an event
