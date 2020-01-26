@@ -27,7 +27,7 @@
 // Macro used to initialize compile-time value that represents debug level
 // of whole project. Use only constants listed below!
 // 
-#define DECLARE_DEBUG_LEVEL( _level ) const DWORD __RESERVED_DEBUG_LEVEL = _level;
+#define DECLARE_DEBUG_LEVEL( _level ) constexpr DWORD __RESERVED_DEBUG_LEVEL = _level;
 
 //
 // Macro that prints some data in case of corresponding debug level.
